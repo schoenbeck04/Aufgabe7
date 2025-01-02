@@ -19,41 +19,58 @@ import com.example.jetpackcompose.viewmodel.WeatherViewModel
 import com.example.jetpackcompose.ui.components.SearchBarSample
 import com.example.jetpackcompose.ui.components.WeatherCard
 
+// Composable-Funktion, die die Wettervorhersage anzeigt
 @Composable
 fun ForecastWeatherView(forecast: List<ForecastItem>) {
+    // Zugriff auf den aktuellen Kontext (z.B. für DataStore)
     val context = LocalContext.current
+
+    // Zustände für die Speicherung von Heimatstadt und API-Schlüssel
     var hometown by remember { mutableStateOf("") }
     var apiKey by remember { mutableStateOf("") }
+
+    // Zugriff auf das ViewModel für die Wetterdaten
     val weatherViewModel: WeatherViewModel = viewModel()
+
+    // Zustandsbeobachtung für Fehlermeldungen
     val errorMessage by weatherViewModel.errorMessage.collectAsState()
 
-    // Retrieve hometown and apiKey from DataStore
+    // LaunchedEffect wird beim ersten Aufruf der Composable-Funktion ausgeführt
+    // Hier werden die Werte von Heimatstadt und API-Schlüssel aus dem DataStore abgerufen
     LaunchedEffect(Unit) {
         context.dataStore.data.collect { preferences ->
+            // Heimatstadt und API-Schlüssel aus dem DataStore holen
             hometown = preferences[Keys.HOMETOWN_KEY] ?: ""
             apiKey = preferences[Keys.API_TOKEN_KEY] ?: ""
 
+            // Wenn Heimatstadt und API-Schlüssel gesetzt sind, wird die Wettervorhersage abgerufen
             if (hometown.isNotEmpty() && apiKey.isNotEmpty()) {
                 weatherViewModel.fetchForecastData(hometown, apiKey)
             }
         }
     }
 
+    // Zustand für die Suchabfrage der Stadt
     val searchQuery = rememberSaveable { mutableStateOf("") }
 
+    // Box, um die Suchleiste zu platzieren
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
+        // Die Suchleiste für die Vorhersage wird angezeigt
         SearchBarSample(
-            selectedMenu = "Forecast",
-            apiKey = apiKey,
+            selectedMenu = "Forecast", // Titel für die Suchleiste
+            apiKey = apiKey,  // API-Schlüssel
             onQueryChanged = { query ->
+                // Suchabfrage ändern
                 searchQuery.value = query
+                // Wenn etwas eingegeben wurde, wird die Vorhersage für diese Stadt abgerufen
                 if (query.isNotEmpty()) {
                     weatherViewModel.fetchForecastData(query, apiKey)
                 } else {
+                    // Wenn keine Eingabe vorhanden ist, wird die Vorhersage für die Heimatstadt abgerufen
                     if (hometown.isNotEmpty() && apiKey.isNotEmpty()) {
                         weatherViewModel.fetchForecastData(hometown, apiKey)
                     }
@@ -62,18 +79,20 @@ fun ForecastWeatherView(forecast: List<ForecastItem>) {
         )
     }
 
+    // Fehlernachricht anzeigen, falls vorhanden
     errorMessage?.let {
         Text(
             text = it,
-            color = Color.Red,
+            color = Color.Red,  // Rote Farbe für die Fehlermeldung
             style = MaterialTheme.typography.bodyLarge.copy(fontSize = 25.sp),
             modifier = Modifier
                 .padding(32.dp)
                 .fillMaxWidth()
-                .wrapContentWidth(Alignment.CenterHorizontally)
+                .wrapContentWidth(Alignment.CenterHorizontally)  // Zentriert den Text
         )
     }
 
+    // Layout für den gesamten Bildschirm
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -81,9 +100,11 @@ fun ForecastWeatherView(forecast: List<ForecastItem>) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp)) // Abstand oben
 
+        // Überprüft, ob die Suchabfrage und die Heimatstadt leer sind
         if (searchQuery.value.isEmpty() && hometown.isEmpty()) {
+            // Wenn keine Stadt angegeben ist, wird eine Aufforderung angezeigt
             Text(
                 text = "Set your hometown in settings",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -93,6 +114,7 @@ fun ForecastWeatherView(forecast: List<ForecastItem>) {
                 modifier = Modifier.padding(16.dp)
             )
         } else if (forecast.isNotEmpty()) {
+            // Wenn Vorhersagedaten vorhanden sind, wird der Titel mit der Stadt angezeigt
             Text(
                 text = "Forecast for ${searchQuery.value.takeIf { it.isNotEmpty() } ?: hometown}",
                 style = MaterialTheme.typography.headlineLarge.copy(
@@ -101,17 +123,18 @@ fun ForecastWeatherView(forecast: List<ForecastItem>) {
                 ),
                 modifier = Modifier
                     .padding(bottom = 32.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally) // Zentriert den Titel
             )
 
-            // Display forecast data
+            // LazyColumn zum Anzeigen der Wettervorhersage
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
+                // Jedes Vorhersageelement wird als "WeatherCard" angezeigt
                 items(forecast) { forecastItem ->
-                    WeatherCard(forecastItem = forecastItem)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    WeatherCard(forecastItem = forecastItem)  // Anzeige der Wetterkarte für jedes Element
+                    Spacer(modifier = Modifier.height(8.dp))  // Abstand zwischen den Karten
                 }
             }
         }
