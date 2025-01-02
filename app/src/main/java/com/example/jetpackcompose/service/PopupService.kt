@@ -36,13 +36,9 @@ class PopupService : Service() {
         super.onCreate()
         createNotificationChannel()
 
-
-        ////////////////////////////////////
-
-        //TODO starte den Service hier
-
-        ////////////////////////////////////
-
+        // Start the service in foreground mode
+        val notification = getNotification("Popup Service started")
+        startForeground(1, notification)
 
         registerUpdateReceiver()
         initializeTimerFromSettings()
@@ -88,11 +84,9 @@ class PopupService : Service() {
 
     private suspend fun fetchTimerOptionFromSettings(): String {
         val key = stringPreferencesKey("timer_option_key")
-        val timerOption = dataStore.data.map { preferences ->
+        return dataStore.data.map { preferences ->
             preferences[key] ?: "Deactivated"
         }.first()
-
-        return timerOption
     }
 
     private fun registerUpdateReceiver() {
@@ -103,7 +97,6 @@ class PopupService : Service() {
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
     }
-
 
     private fun timerOptionToMillis(option: String): Long {
         return when (option) {
@@ -127,7 +120,6 @@ class PopupService : Service() {
             }
         }
     }
-
 
     private fun sendNotification(message: String) {
         if (ActivityCompat.checkSelfPermission(

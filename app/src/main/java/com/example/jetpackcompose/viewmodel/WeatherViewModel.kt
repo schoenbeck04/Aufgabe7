@@ -41,14 +41,23 @@ class WeatherViewModel : ViewModel() {
     }
 
     fun fetchForecastData(city: String, apiKey: String) {
-
-        ////////////////////////////////////
-
-        //Todo
-
-        ////////////////////////////////////
-
+        viewModelScope.launch {
+            try {
+                // API-Aufruf für die Vorhersagedaten
+                val forecastResponse = WeatherApiService.fetchForecast(city, apiKey)
+                if (forecastResponse != null) {
+                    _forecast.value = forecastResponse.list
+                    _errorMessage.value = null // Kein Fehler
+                } else {
+                    _errorMessage.value = "Failed to fetch forecast. Please check your API key or city name."
+                }
+            } catch (e: Exception) {
+                // Fehlerbehandlung
+                _errorMessage.value = "An error occurred while fetching forecast: ${e.localizedMessage}"
+            }
+        }
     }
+
 
     private fun fetchWeatherIcon(iconId: String) {
         if (iconId.isNotEmpty()) {

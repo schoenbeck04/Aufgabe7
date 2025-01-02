@@ -2,13 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permission to run foreground services -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <!-- Add the required permission for foreground service type dataSync -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <!-- Permission required for foreground data sync -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
+    <!-- Add permissions for notifications and internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -33,10 +34,11 @@
             </intent-filter>
         </activity>
 
-        <!-- Declare the PopupService as a foreground service with a specified service type -->
+        <!-- Declare the PopupService as a foreground service -->
         <service
             android:name=".service.PopupService"
             android:exported="false"
-            android:foregroundServiceType="dataSync"/>
+            android:foregroundServiceType="dataSync" />
+
     </application>
 </manifest>

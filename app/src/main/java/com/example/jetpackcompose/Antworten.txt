@@ -1,0 +1,9 @@
+A) Durch Coroutinen ermöglichen es asychrone Aufgabe parallel machen zu können und helfen diese lesbarer und watungsfreundlicher zu machen.
+
+B) Ich habe mich für Dispachters.IO entschieden aus dem Grund, dass er sicherstellt, dass Operationen auf einem seperaten Thread ausgeführt werden ohne den UI-Thread zu blockieren.
+
+C) 1. Bei einer Wetterapp wenn im Hintergrund Daten aktualisiert werden müssen, weil sich das Wetter ändert. Der Service läuft dann im Hintergrund ohne die Benutzeroberfläche zu blockieren.
+   2. Wenn man Musik im Hintergrund hört. Der Service kann weiterlaufen und der Benutzer kann zeitgleich eine andere App verwenden.
+
+D) Vorteile: 1. So können Aufgaben auch im Hintergrund gelöst werden. 2. Benutzeroberfläche wird dadurch nicht blockiert und man kann andere Dinge machen während der Service im Hintergrund läuft.
+Beispiel aus der Wetter-App ist, dass alle 10 sekunden eine Notification geschickt wird.    
